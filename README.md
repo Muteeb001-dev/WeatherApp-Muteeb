@@ -15,8 +15,11 @@ A dynamic Weather App that provides real-time weather details for any city enter
 - 🌟 **Splash Screen**: An engaging splash screen displayed when the app is opened.
 
 ## How to Run 🛠️
-1. Clone this repository:
-   https://github.com/stepforward2023/WeatherApp.git
+1. **Clone the repository**: Use `git clone` with the repository URL.
+2. **Open in Android Studio**: Open the project folder in Android Studio.
+3. **Sync Gradle**: Wait for the Gradle sync to complete.
+4. **Get API Key**: Obtain a free API key from [OpenWeatherMap](https://openweathermap.org/api) and replace it in `MainActivity.kt` (if needed).
+5. **Run the App**: Connect an Android device or use an emulator and click the **Run** button.
 
 ## Technologies Used 💻
 - **Languages**: XML, Kotlin
