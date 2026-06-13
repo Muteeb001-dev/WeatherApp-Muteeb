@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.muteebweatherapp
 
 data class Clouds(
     val all: Int

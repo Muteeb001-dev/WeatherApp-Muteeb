@@ -14,10 +14,6 @@ A dynamic Weather App that provides real-time weather details for any city enter
 - 🎨 **Dynamic Background**: The app's background changes to match the current weather condition of the city. (e.g., rain for drizzle, sun for clear skies)
 - 🌟 **Splash Screen**: An engaging splash screen displayed when the app is opened.
 
-## Demo 📸
-Check out the app in action: [Watch the Video](https://drive.google.com/file/d/1gmC6Z5vueReE0KGh2N9h_C8bWak3kuQz/view?usp=sharing)
-
-
 ## How to Run 🛠️
 1. Clone this repository:
    https://github.com/stepforward2023/WeatherApp.git
@@ -34,8 +30,11 @@ Check out the app in action: [Watch the Video](https://drive.google.com/file/d/1
 - Implement geolocation to fetch weather details automatically for the user's current location.
 - Create a widget for quick weather updates on the home screen.
 
+## Author 👨‍💻
+Developed by **Muteeb Tariq**
+
 ## Acknowledgements 🙌
-This app was created as part of a learning project, inspired by [NeatRoots](https://www.youtube.com/@NeatRoots). Thank you for the step-by-step guidance!
+This app was created as part of a learning project. Thank you for the guidance!
 
 
 

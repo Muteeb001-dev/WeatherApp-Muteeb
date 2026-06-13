@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.muteebweatherapp
 
 import retrofit2.Call
 import retrofit2.http.GET
@@ -11,4 +11,11 @@ interface ApiInterface {
         @Query("appid") appid:String?,
         @Query("units") units:String?
     ) : Call<WeatherApp>
+
+    @GET("forecast")
+    fun getForecastData(
+        @Query("q") city:String?,
+        @Query("appid") appid:String?,
+        @Query("units") units:String?
+    ) : Call<ForecastResponse>
 }

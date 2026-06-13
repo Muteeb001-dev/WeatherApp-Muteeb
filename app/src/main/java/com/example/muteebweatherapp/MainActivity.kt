@@ -1,21 +1,17 @@
-package com.example.weatherapp
+package com.example.muteebweatherapp
 
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.`SearchView$InspectionCompanion`
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.weatherapp.databinding.ActivityMainBinding
+import com.example.muteebweatherapp.databinding.ActivityMainBinding
 import retrofit2.Call
 
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -28,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
-        fetchWeatherData("Jaipur")
+        fetchWeatherData("Lahore")
         SearchCity()
 
 
@@ -60,14 +56,14 @@ class MainActivity : AppCompatActivity() {
             .baseUrl("https://api.openweathermap.org/data/2.5/")
             .build().create(ApiInterface::class.java)
         val response =
-            retrofit.getWeatherData(city_name, "2553a908ba48d63dd91ba765c83cacad", "metric")
+            retrofit.getWeatherData(city_name, "e4d5b404131b4ad3a169c1d00a186c63", "metric")
         response.enqueue(object : Callback<WeatherApp> {
             override fun onResponse(call: Call<WeatherApp>, response: Response<WeatherApp>) {
                 Log.d("event", "got response")
                 val responseBody = response.body()
                 if (response.isSuccessful && responseBody != null) {
-                    val temperature = responseBody.main.temp.toString()
-                    val humidity = responseBody.main.humidity.toString()
+                    val temperature = responseBody.main.temp
+                    val humidity = responseBody.main.humidity
                     val windSpeed = responseBody.wind.speed
                     val sunRise = responseBody.sys.sunrise.toLong()
                     val sunSet = responseBody.sys.sunset.toLong()
@@ -76,32 +72,64 @@ class MainActivity : AppCompatActivity() {
                     val maxTemp = responseBody.main.temp_max
                     val minTemp = responseBody.main.temp_min
 
-                    binding.temp.text = "$temperature °C"
+                    binding.temp.text = "${temperature.toInt()} °C"
                     binding.weather.text = "$condition"
-                    binding.maxTemp.text = "Max Temp: $maxTemp °C"
-                    binding.minTemp.text = "Min Temp: $minTemp °C"
+                    binding.maxTemp.text = "Max Temp: ${maxTemp.toInt()} °C"
+                    binding.minTemp.text = "Min Temp: ${minTemp.toInt()} °C"
                     binding.humidity.text = "$humidity %"
                     binding.windSpeed.text = "$windSpeed m/s"
                     binding.sunrise.text = "${time(sunRise)}"
                     binding.sunset.text = "${time(sunSet)}"
                     binding.sea.text = "$seaLevel hpa"
                     binding.condition.text = condition
-                    binding.day.text =dayName(System.currentTimeMillis())
-                        binding.date.text =date()
-                        binding.cityName.text = "$city_name"
+                    binding.day.text = dayName(System.currentTimeMillis())
+                    binding.date.text = date()
+                    binding.cityName.text = "$city_name"
                     changeIMagesAccordingToWeatherCondition(condition)
 
-                    Log.d("TAG", "onResponse: ${temperature.toString()}")
+                    // Asli Max/Min fetch karne ke liye forecast call
+                    fetchMaxMin(city_name)
+
+                    Log.d("TAG", "onResponse: $temperature")
                 }
-
             }
-
 
             override fun onFailure(call: Call<WeatherApp>, t: Throwable) {
                 Log.d("event", "failure ${t.toString()}")
             }
-
         })
+    }
+
+    private fun fetchMaxMin(city_name: String) {
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://api.openweathermap.org/data/2.5/")
+            .build().create(ApiInterface::class.java)
+
+        retrofit.getForecastData(city_name, "e4d5b404131b4ad3a169c1d00a186c63", "metric")
+            .enqueue(object : Callback<ForecastResponse> {
+                override fun onResponse(
+                    call: Call<ForecastResponse>,
+                    response: Response<ForecastResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val forecastList = response.body()?.list
+                        if (forecastList != null && forecastList.isNotEmpty()) {
+                            // Aaj ke din ke pehle 8 segments (24 hours) ka max aur min nikalte hain
+                            val todayForecast = forecastList.take(8)
+                            val max = todayForecast.maxOf { it.main.temp_max }.toInt()
+                            val min = todayForecast.minOf { it.main.temp_min }.toInt()
+
+                            binding.maxTemp.text = "Max Temp: $max °C"
+                            binding.minTemp.text = "Min Temp: $min °C"
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<ForecastResponse>, t: Throwable) {
+                    Log.d("ForecastError", t.message.toString())
+                }
+            })
     }
 
     private fun changeIMagesAccordingToWeatherCondition(conditions:String) {
@@ -130,19 +158,20 @@ class MainActivity : AppCompatActivity() {
         binding.lottieAnimationView.playAnimation()
     }
 
-    fun dayName(timeStamp:Long): String{
-        val sdf=SimpleDateFormat("EEEE", Locale.getDefault())
-       return sdf.format((Date()))
+    fun dayName(timeStamp: Long): String {
+        val sdf = SimpleDateFormat("EEEE", Locale.getDefault())
+        return sdf.format((Date()))
     }
-    private fun date():String {
-        val sdf=SimpleDateFormat("dd mm yyyy", Locale.getDefault())
+
+    private fun date(): String {
+        val sdf = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
         return sdf.format((Date()))
 
     }
-    private fun time(timeStamp:Long):String {
-        val sdf=SimpleDateFormat("HH:mm", Locale.getDefault())
-        return sdf.format((Date(timeStamp*1000)))
 
+    private fun time(timeStamp: Long): String {
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        return sdf.format((Date(timeStamp * 1000)))
     }
 
 
